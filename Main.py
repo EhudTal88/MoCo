@@ -18,7 +18,7 @@ def model_pipeline():
     lr= 2e-3 # Learning rate
     wd= 1e-4 # Weight decay parameter
     queue_size= 4096 # Dictionary queue length (number of example entries)
-    batch_size= 256
+    batch_size=128
     epochs= 200
     image_size = 224 # SxS
     ks = (int(0.1 * image_size) // 2) * 2 + 1  # Gaussian kernel (for blurring).

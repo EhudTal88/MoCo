@@ -6,20 +6,28 @@ class MoCo(nn.Module):
         super(MoCo,self).__init__()
 
         self.keys_encoder= backbone #todo: change backbone
+        self.keys_encoder = nn.sequential('MLP',nn.Conv2d(512, 128, (1, 1), stride=(1, 1)))
 
-        for p in self.keys_encoder.parameters(): #Detach Gradients from keys network
-            p.requires_grad= False
+        #for p in self.keys_encoder.parameters(): #Detach Gradients from keys network
+            #p.requires_grad= False
 
         self.query_encoder= backbone
+        self.keys_encoder = nn.sequential('MLP',nn.Conv2d(512, 128, (1, 1), stride=(1, 1)))
         self.classifier= nn.Sequential() #todo: implement MLP Head
         self.transforms= transforms
 
     def forward(self, x_k,x_q,queue):
         ''' Augment x twice -> pass through k/q networks -> '''
+        #forward pass through backbone:
 
-        #forward pass through backbone
+        # Compute encoded representations:
         k= self.keys_encoder(x_k)
         q= self.query_encoder(x_q)
+        # Normalize encoded representations:
+        k = k/torch.norm(k,2)
+        q = q/torch.norm(q,2)
+
+        x_k= x_k.detach()
 
         N,C= k.shape#shape of input data (NxC)
         _,K= queue.shape
